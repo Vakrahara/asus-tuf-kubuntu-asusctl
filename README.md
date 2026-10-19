@@ -26,7 +26,7 @@ This repository automates the entire installation, cleans up conflicting daemons
 Clone this repository and run the installer:
 
 ```bash
-git clone https://github.com/<YOUR_GITHUB_USERNAME>/asus-tuf-kubuntu-asusctl.git
+git clone https://github.com/Vakrahara/asus-tuf-kubuntu-asusctl.git
 cd asus-tuf-kubuntu-asusctl
 chmod +x install.sh uninstall.sh
 ./install.sh
