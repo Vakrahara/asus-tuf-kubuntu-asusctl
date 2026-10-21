@@ -58,8 +58,54 @@ chmod +x install.sh uninstall.sh
 | **Battery Threshold** | ✅ | `asusctl battery limit <percent>` | 60% or 80% supported |
 | **Keyboard Single-Zone Aura** | ✅ | `asusctl aura effect <mode>` | Static, Breathe, Rainbow, etc. |
 | **Keyboard Brightness** | ✅ | `asusctl leds set <level>` | Off, Low, Med, High |
-| **GUI Dashboard** | ✅ | `rog-control-center` | Full hardware monitoring & RGB controls |
-| **Discrete GPU (RTX 2050)** | ✅ | KDE Right-Click / `switcheroo-control` | MUX switch absent; use PRIME Render Offload |
+| **GUI Dashboard** | ✅ | `rog-control-center` | Custom 1-Click Battery Presets (60% / 80% / 100%) & RGB |
+| **Discrete GPU (RTX 2050)** | ✅ | `prime-run <command>` | NVIDIA PRIME Render Offload wrapper |
+
+---
+
+## 🎮 Running Games & Apps on NVIDIA RTX 2050 (`prime-run`)
+
+The ASUS TUF F15 (FX506HF) uses **NVIDIA Optimus (Hybrid PRIME Offload)**. The low-power Intel UHD Graphics drives the internal display, while the RTX 2050 sleeps at 0W until invoked.
+
+To run any app or game with full RTX 2050 acceleration:
+
+```bash
+# General Linux apps / benchmarks
+prime-run glxinfo -B
+prime-run blender
+prime-run lutris
+
+# Steam Games
+# Right-click Game -> Properties -> Launch Options, set:
+prime-run %command%
+```
+
+---
+
+## 🔋 1-Click Battery Presets (GUI & Terminal)
+
+### In ROG Control Center (GUI)
+Open **ROG Control Center** -> **Battery Info** tab:
+- **`[ 🔒 Desk (60%) ]`**: Caps charging at 60% to maximize battery lifespan while plugged in.
+- **`[ ⚡ Balanced (80%) ]`**: Charges up to 80% for day-to-day mixed use.
+- **`[ 🔋 Travel (100%) ]`**: Charges to full 100% capacity for maximum mobility.
+
+### In Terminal
+Quick shell aliases are also included in `~/.bashrc`:
+```bash
+desk-mode     # Sets 60% cap + Balanced profile
+travel-mode   # Sets 100% cap + Quiet profile (maximizes battery life)
+```
+
+---
+
+## ❓ Frequently Asked Questions (FAQ)
+
+### Q: Why does ROG Control Center show ~63% Battery Health when set to 60%?
+**A:** This is normal and expected mathematical behavior:
+`rog-platform` calculates battery health via:
+$$\text{Health} = \frac{\text{charge\_full}}{\text{charge\_full\_design}} \times 100$$
+When the ASUS EC hardware limits charging to 60%, Linux kernel `/sys/class/power_supply/BAT1/charge_full` reports the current capped ceiling ($2591\text{ mAh}$) rather than physical battery capacity ($4110\text{ mAh}$). $2591 / 4110 \approx 63.04\%$. If you switch to **Travel (100%)**, health will read 100%.
 
 ---
 

@@ -62,6 +62,15 @@ sudo udevadm control --reload-rules
 sudo udevadm trigger
 sudo systemctl enable --now asusd.service
 
+# Install prime-run NVIDIA offload utility
+if [ -f "$SCRIPT_DIR/bin/prime-run" ]; then
+    echo -e "${BLUE}Installing NVIDIA prime-run offload helper...${NC}"
+    sudo install -D -m 0755 "$SCRIPT_DIR/bin/prime-run" /usr/local/bin/prime-run
+    mkdir -p "$HOME/.local/bin"
+    cp "$SCRIPT_DIR/bin/prime-run" "$HOME/.local/bin/prime-run"
+    chmod +x "$HOME/.local/bin/prime-run"
+fi
+
 # Remove/disable buggy asusd-user on TUF (prevents AniMe Matrix crashes)
 systemctl --user stop asusd-user.service 2>/dev/null || true
 systemctl --user disable asusd-user.service 2>/dev/null || true
