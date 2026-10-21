@@ -1,0 +1,145 @@
+diff --git a/rog-control-center/ui/pages/battery.slint b/rog-control-center/ui/pages/battery.slint
+index 0a8d4a7..9e20adf 100644
+--- a/rog-control-center/ui/pages/battery.slint
++++ b/rog-control-center/ui/pages/battery.slint
+@@ -1,5 +1,5 @@
+ import { SystemSlider, RogItem } from "../widgets/common.slint";
+-import { Palette, VerticalBox, ScrollView } from "std-widgets.slint";
++import { Palette, VerticalBox, ScrollView, Button } from "std-widgets.slint";
+ import { SystemPageData } from "system.slint";
+ 
+ export component PageBattery inherits Rectangle {
+@@ -38,6 +38,38 @@ export component PageBattery inherits Rectangle {
+                 }
+             }
+ 
++            if SystemPageData.charge_control_end_threshold != -1: HorizontalLayout {
++                spacing: 10px;
++                height: 34px;
++                
++                Button {
++                    text: "🔒 Desk (60%)";
++                    enabled <=> SystemPageData.charge_control_enabled;
++                    clicked => {
++                        SystemPageData.charge_control_end_threshold = 60;
++                        SystemPageData.cb_charge_control_end_threshold(60);
++                    }
++                }
++                
++                Button {
++                    text: "⚡ Balanced (80%)";
++                    enabled <=> SystemPageData.charge_control_enabled;
++                    clicked => {
++                        SystemPageData.charge_control_end_threshold = 80;
++                        SystemPageData.cb_charge_control_end_threshold(80);
++                    }
++                }
++
++                Button {
++                    text: "🔋 Travel (100%)";
++                    enabled <=> SystemPageData.charge_control_enabled;
++                    clicked => {
++                        SystemPageData.charge_control_end_threshold = 100;
++                        SystemPageData.cb_charge_control_end_threshold(100);
++                    }
++                }
++            }
++
+             if SystemPageData.battery_health != -1: Rectangle {
+                 background: Palette.alternate-background;
+                 border-color: Palette.border;
+diff --git a/rog-control-center/ui/widgets/sidebar.slint b/rog-control-center/ui/widgets/sidebar.slint
+index 2b17e1c..8e3259f 100644
+--- a/rog-control-center/ui/widgets/sidebar.slint
++++ b/rog-control-center/ui/widgets/sidebar.slint
+@@ -98,23 +98,79 @@ export component SideBar inherits Rectangle {
+     }
+ 
+     VerticalBox {
+-        spacing: 4px;
++        spacing: 6px;
+         padding: 0px;
+         alignment: start;
+ 
+-        Image {
+-            height: 100px;
+-            // TODO: change if TUF on the logo in the menu on the main page
+-            // If running on a TUF model, replace the ROG red with TUF orange
+-            // (add data/tuf-control-center.png and switch here when available)
+-            source: @image-url("../../data/rog-control-center.png");
+-            horizontal-alignment: center;
+-            image-fit: contain;
++        // --- Premium Animated Neon ROG Logo Badge ---
++        logo_badge := Rectangle {
++            height: 108px;
++            width: 168px;
++            x: (parent.width - self.width) / 2;
++            border-radius: 10px;
++
++            // Continuous breathing neon pulse (smooth 2.4s cycle)
++            property <float> pulse: 0.5 + 0.5 * Math.sin(360deg * animation-tick() / 2400ms);
++            property <bool> is_hovered: logo_touch.has-hover;
++
++            // Cyberpunk dark glass background with subtle neon tint
++            background: @linear-gradient(145deg, 
++                #22141a 0%, 
++                #16161c 50%, 
++                #121b22 100%
++            );
++
++            // Pulsing neon border
++            border-width: is_hovered ? 2px : 1.5px;
++            border-color: is_hovered ? #ff3366 : #ff1744.transparentize(0.35 + 0.35 * (1.0 - pulse));
++
++            // Neon breathing aura drop-shadow
++            drop-shadow-blur: is_hovered ? 24px : (10px + 12px * pulse);
++            drop-shadow-color: is_hovered ? #ff0055cc : #ff0055.transparentize(0.45 + 0.35 * (1.0 - pulse));
++            drop-shadow-offset-x: 0px;
++            drop-shadow-offset-y: 0px;
++
++            // Radial neon core behind the ROG Eye
++            Rectangle {
++                width: 110px;
++                height: 60px;
++                border-radius: 30px;
++                background: @radial-gradient(circle, 
++                    #ff005555 0%, 
++                    #ff174425 45%, 
++                    transparent 75%
++                );
++                opacity: logo_badge.is_hovered ? 1.0 : (0.55 + 0.45 * logo_badge.pulse);
++            }
++
++            // Authentic ROG Logo
++            Image {
++                width: 140px;
++                height: 90px;
++                source: @image-url("../../data/rog-control-center.png");
++                horizontal-alignment: center;
++                image-fit: contain;
++            }
++
++            logo_touch := TouchArea {
++                width: 100%;
++                height: 100%;
++            }
+         }
+ 
++        // Animated glowing neon beam divider
+         Rectangle {
+-            height: 1px;
+-            background: Palette.border;
++            height: 2px;
++            width: 100%;
++            property <float> line_pulse: 0.5 + 0.5 * Math.sin(360deg * animation-tick() / 2400ms);
++            background: @linear-gradient(90deg, 
++                transparent 0%, 
++                #ff005580 25%, 
++                #ff1744 50%, 
++                #00e5ff80 75%, 
++                transparent 100%
++            );
++            opacity: 0.5 + 0.5 * line_pulse;
+         }
+ 
+         navigation := VerticalLayout {

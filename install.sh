@@ -47,8 +47,10 @@ git clone --depth 1 https://github.com/OpenGamingCollective/asusctl.git "$TEMP_B
 cd "$TEMP_BUILD_DIR"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ -f "$SCRIPT_DIR/patches/battery-preset-buttons.patch" ]; then
-    echo -e "${BLUE}Applying UI enhancement: 1-click Battery Preset buttons...${NC}"
+if [ -f "$SCRIPT_DIR/patches/rog-control-center-ui-enhancements.patch" ]; then
+    echo -e "${BLUE}Applying UI enhancements (1-click Battery Presets & Animated Neon ROG Logo)...${NC}"
+    git apply "$SCRIPT_DIR/patches/rog-control-center-ui-enhancements.patch" || true
+elif [ -f "$SCRIPT_DIR/patches/battery-preset-buttons.patch" ]; then
     git apply "$SCRIPT_DIR/patches/battery-preset-buttons.patch" || true
 fi
 
