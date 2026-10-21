@@ -45,6 +45,13 @@ echo -e "\n${GREEN}[4/6] Compiling asusctl and rog-control-center from upstream.
 TEMP_BUILD_DIR=$(mktemp -d /tmp/asusctl-build.XXXXXX)
 git clone --depth 1 https://github.com/OpenGamingCollective/asusctl.git "$TEMP_BUILD_DIR"
 cd "$TEMP_BUILD_DIR"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/patches/battery-preset-buttons.patch" ]; then
+    echo -e "${BLUE}Applying UI enhancement: 1-click Battery Preset buttons...${NC}"
+    git apply "$SCRIPT_DIR/patches/battery-preset-buttons.patch" || true
+fi
+
 make
 sudo make install
 rm -rf "$TEMP_BUILD_DIR"

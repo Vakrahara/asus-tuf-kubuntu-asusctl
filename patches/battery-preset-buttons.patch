@@ -1,0 +1,50 @@
+diff --git a/rog-control-center/ui/pages/battery.slint b/rog-control-center/ui/pages/battery.slint
+index 0a8d4a7..9e20adf 100644
+--- a/rog-control-center/ui/pages/battery.slint
++++ b/rog-control-center/ui/pages/battery.slint
+@@ -1,5 +1,5 @@
+ import { SystemSlider, RogItem } from "../widgets/common.slint";
+-import { Palette, VerticalBox, ScrollView } from "std-widgets.slint";
++import { Palette, VerticalBox, ScrollView, Button } from "std-widgets.slint";
+ import { SystemPageData } from "system.slint";
+ 
+ export component PageBattery inherits Rectangle {
+@@ -38,6 +38,38 @@ export component PageBattery inherits Rectangle {
+                 }
+             }
+ 
++            if SystemPageData.charge_control_end_threshold != -1: HorizontalLayout {
++                spacing: 10px;
++                height: 34px;
++                
++                Button {
++                    text: "🔒 Desk (60%)";
++                    enabled <=> SystemPageData.charge_control_enabled;
++                    clicked => {
++                        SystemPageData.charge_control_end_threshold = 60;
++                        SystemPageData.cb_charge_control_end_threshold(60);
++                    }
++                }
++                
++                Button {
++                    text: "⚡ Balanced (80%)";
++                    enabled <=> SystemPageData.charge_control_enabled;
++                    clicked => {
++                        SystemPageData.charge_control_end_threshold = 80;
++                        SystemPageData.cb_charge_control_end_threshold(80);
++                    }
++                }
++
++                Button {
++                    text: "🔋 Travel (100%)";
++                    enabled <=> SystemPageData.charge_control_enabled;
++                    clicked => {
++                        SystemPageData.charge_control_end_threshold = 100;
++                        SystemPageData.cb_charge_control_end_threshold(100);
++                    }
++                }
++            }
++
+             if SystemPageData.battery_health != -1: Rectangle {
+                 background: Palette.alternate-background;
+                 border-color: Palette.border;
